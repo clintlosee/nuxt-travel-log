@@ -10,6 +10,7 @@
       </NuxtLink>
     </div>
     <div class="navbar-end">
+      <AppThemeToggle />
       <NuxtLink
         to="/dashboard"
         class="btn btn-accent"
