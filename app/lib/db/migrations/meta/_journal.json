@@ -15,6 +15,27 @@
       "when": 1746393953740,
       "tag": "0001_flimsy_northstar",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1746760769203,
+      "tag": "0002_brown_elektra",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1746761347823,
+      "tag": "0003_burly_bulldozer",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1746761504715,
+      "tag": "0004_broad_rick_jones",
+      "breakpoints": true
     }
   ]
 }
