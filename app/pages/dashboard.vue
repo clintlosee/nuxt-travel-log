@@ -54,7 +54,7 @@ function toggleSidebar() {
     </div>
 
     <div class="flex-1">
-      You are logged in
+      <NuxtPage />
     </div>
   </div>
 </template>
