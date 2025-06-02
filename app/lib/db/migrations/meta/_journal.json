@@ -43,6 +43,13 @@
       "when": 1748215119284,
       "tag": "0005_good_greymalkin",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "6",
+      "when": 1748894735541,
+      "tag": "0006_shocking_microchip",
+      "breakpoints": true
     }
   ]
 }
