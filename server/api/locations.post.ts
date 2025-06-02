@@ -1,8 +1,15 @@
+import type { DrizzleError } from 'drizzle-orm';
+
+import { and, eq } from 'drizzle-orm';
+import { customAlphabet } from 'nanoid';
+import slugify from 'slug';
+
 import db from '~/lib/db';
 import { InsertLocation, location } from '~/lib/db/schema';
 
+const nanoid = customAlphabet('1234567890abcdefghijklmnopqrstuvwxyz', 5);
+
 export default defineEventHandler(async (event) => {
-  console.log('event.context.user:', event.context.user);
   if (!event.context.user) {
     return sendError(event, createError({
       statusCode: 401,
@@ -29,11 +36,55 @@ export default defineEventHandler(async (event) => {
     }));
   }
 
-  const [created] = await db.insert(location).values({
-    ...result.data,
-    slug: result.data.name.replaceAll(' ', '-').toLowerCase(),
-    userId: event.context.user.id,
-  }).returning();
+  const existingLocation = await db.query.location.findFirst({
+    where:
+      and(
+        eq(location.name, result.data.name),
+        eq(location.userId, event.context.user.id),
+      ),
+  });
 
-  return created;
+  if (existingLocation) {
+    return sendError(event, createError({
+      statusCode: 409,
+      statusMessage: 'Location with this name already exists.',
+    }));
+  }
+
+  let slug = slugify(result.data.name);
+  let existing = !!(await db.query.location.findFirst({
+    where: eq(location.slug, slug),
+  }));
+
+  while (existing) {
+    const id = nanoid();
+    const idSlug = `${slug}-${id}`;
+    existing = !!(await db.query.location.findFirst({
+      where: eq(location.slug, idSlug),
+    }));
+    if (!existing) {
+      slug = idSlug;
+    }
+  }
+
+  try {
+    const [created] = await db.insert(location).values({
+      ...result.data,
+      slug,
+      userId: event.context.user.id,
+    }).returning();
+
+    return created;
+  }
+  catch (err) {
+    console.error('err:', err);
+    const error = err as DrizzleError;
+    if (error.message === 'SQLITE_CONSTRAINT: SQLite error: UNIQUE constraint failed: location.slug') {
+      throw createError({
+        statusCode: 409,
+        statusMessage: 'Slug must be unique (the location name is used to generate the slug).',
+      });
+    }
+    throw error;
+  }
 });
