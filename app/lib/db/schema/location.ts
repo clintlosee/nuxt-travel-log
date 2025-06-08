@@ -29,3 +29,5 @@ export const InsertLocation = createInsertSchema(location, {
   createdAt: true,
   updatedAt: true,
 });
+
+export type InsertLocation = Zod.infer<typeof InsertLocation>;
