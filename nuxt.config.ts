@@ -36,4 +36,7 @@ export default defineNuxtConfig({
   colorMode: {
     dataValue: 'theme',
   },
+  // devServer: {
+  //   port: 4444,
+  // },
 });
