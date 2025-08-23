@@ -5,12 +5,13 @@ import type { MapPoint } from '~/lib/types';
 export const useMapStore = defineStore('useMapStore', () => {
   const mapPoints = ref<MapPoint[]>([]);
   const selectedPoint = ref<MapPoint | null>(null);
-  const shouldFlyTo = ref(true);
+  const addedPoint = ref<MapPoint | null>(null);
+  // const shouldFlyTo = ref(true);
 
-  function selectPointWithoutFlyTo(point: MapPoint | null) {
-    shouldFlyTo.value = false;
-    selectedPoint.value = point;
-  }
+  // function selectPointWithoutFlyTo(point: MapPoint | null) {
+  //   shouldFlyTo.value = false;
+  //   selectedPoint.value = point;
+  // }
 
   async function init() {
     const { useMap } = await import('@indoorequal/vue-maplibre-gl');
@@ -39,29 +40,44 @@ export const useMapStore = defineStore('useMapStore', () => {
       });
     });
 
-    effect(() => {
-      if (selectedPoint.value) {
-        if (shouldFlyTo.value) {
-          map.map?.flyTo({
-            center: [selectedPoint.value.long, selectedPoint.value.lat],
-            // zoom: 3,
-            speed: 0.9,
-          });
-        }
-        shouldFlyTo.value = true;
-      }
-      else if (bounds) {
-        map.map?.fitBounds(bounds, {
-          padding,
+    // effect(() => {
+    //   if (addedPoint.value) {
+    //     return;
+    //   }
+
+    //   if (selectedPoint.value) {
+    //     if (shouldFlyTo.value) {
+    //       map.map?.flyTo({
+    //         center: [selectedPoint.value.long, selectedPoint.value.lat],
+    //         // zoom: 3,
+    //         speed: 0.9,
+    //       });
+    //     }
+    //     shouldFlyTo.value = true;
+    //   }
+    //   else if (bounds) {
+    //     map.map?.fitBounds(bounds, {
+    //       padding,
+    //     });
+    //   }
+    // });
+
+    watch(addedPoint, (newValue, oldValue) => {
+      if (newValue && !oldValue) {
+        map.map?.flyTo({
+          center: [newValue.long, newValue.lat],
+          speed: 0.9,
+          zoom: 6,
         });
       }
-    });
+    }, { immediate: true });
   }
 
   return {
     init,
+    addedPoint,
     mapPoints,
     selectedPoint,
-    selectPointWithoutFlyTo,
+    // selectPointWithoutFlyTo,
   };
 });
