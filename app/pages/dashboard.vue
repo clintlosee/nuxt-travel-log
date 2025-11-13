@@ -6,6 +6,7 @@ const locationsStore = useLocationsStore();
 const mapStore = useMapStore();
 
 onMounted(() => {
+  // console.log('mounted dashboard.vue');
   isSidebarOpen.value = localStorage.getItem('isSidebarOpen') === 'true';
 
   if (route.path !== '/dashboard') {
